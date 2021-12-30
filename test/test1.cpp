@@ -1,60 +1,49 @@
-#include <iostream>
-#include <random>
-#include <memory>
-#include "countingSort.hh"
-#include "testSortness.hh"
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include "debug.hh"
 
 
+constexpr int MaxNvertices = 10000;		
+double w[MaxNvertices][MaxNvertices];
+double d[MaxNvertices][MaxNvertices];
+	
+
 int main( int argc , char *argv[] )
 {
+	srand(0);
+	
 
-    // A[0,1,2,...,n-1], A[i]=0,1,2,...,k-1
-
-    constexpr unsigned long int k = 1000;
-    constexpr unsigned long int n = 100000;
-
-    std::unique_ptr<unsigned long int[]> A( new unsigned long int[n] );
-
-
-    std::default_random_engine generator(static_cast<unsigned long int>(time(0)));
-    std::uniform_int_distribution<unsigned long long int> distribution(0,k-1);
-    for( unsigned int i=0 ; i<n ; ++i )
-    {
-        A[i] = distribution(generator);
-        DEBUG_MSG( A[i] );
-    }
-
-
-
-    try
-    {
-        countingSort<unsigned long int,k>( A.get() , n );
-    }
-    catch( std::exception const & e )
-    {
-        std::cout << e.what() << "\n";
-    }
-    
-
-    DEBUG_MSG( "\nSorted array:\n" );
-    for( unsigned int i=0 ; i<n ; ++i )
-        DEBUG_MSG( A[i] );
-
-
-
-    auto cmpfunc = []( unsigned long int const & a, unsigned long int const & b )
-    {
-        if( a == b )
-            return 0;
-        else
-            return ( a < b ) ? -1 : +1 ;
-    };
-    if( testSortness( A.get() , n , cmpfunc ) == false )
-        std::cout << "Counting sort failed!"     << std::endl;
-    else
-        std::cout << "Counting sort successfull!" << std::endl;
-
+	
+	printf("[\n");
+	for(int Nvertices = 1000 ; Nvertices<=MaxNvertices; Nvertices+=100)
+	{
+		for(int i=0; i<Nvertices; ++i)
+			for(int j=0; j<Nvertices; ++j)
+				w[i][j] = double(rand())/RAND_MAX;
+		
+		
+		
+		clock_t start = clock();
+		for(int irun=0; irun<1; ++irun )
+		{
+			for(int i=0; i<Nvertices; ++i)
+				for(int j=0; j<Nvertices; ++j)
+					d[i][j] = ( (i==j) ? 0 : w[i][j] );
+			for(int k=0; k<Nvertices; ++k)
+				for(int i=0; i<Nvertices; ++i)
+					for(int j=0; j<Nvertices; ++j)
+						if( d[i][k]+d[k][j] < d[i][j] ) 
+							d[i][j] = d[i][k]+d[k][j];
+		}
+		clock_t end = clock();
+		double time = double(end-start)/CLOCKS_PER_SEC;
+		
+		printf("%d , %f ; ...\n", Nvertices, time);
+	}
+	printf("];");
+	
+	
 
     return 0;
 }
