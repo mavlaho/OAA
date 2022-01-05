@@ -15,19 +15,24 @@ DBG = -D DEBUG -Og -g -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dt
 
 INCL = -I ./src/headers
 
-run:
-	$(CXXC) $(STD) $(OPT) $(INCL) $(SRC) ./src/main.cpp $(LDFLAGS) -o run
+run: ./src/main.cpp
+	$(CXXC) $(STD) $(OPT) $(INCL) ./src/main.cpp $(LDFLAGS) -o run
 
-dbg:
-	$(CXXC) $(STD) $(DBG) $(INCL) $(SRC) ./src/main.cpp $(LDFLAGS) -o dbg
+dbg: ./src/main.cpp
+	$(CXXC) $(STD) $(DBG) $(INCL) ./src/main.cpp $(LDFLAGS) -o dbg
 
-test1:
-	$(CXXC) $(STD) $(OPT) $(INCL) $(SRC) ./test/test1.cpp $(LDFLAGS) -o runtest1
+test1: ./test/test.cpp
+	$(CXXC) $(STD) $(OPT) $(INCL) ./test/test.cpp $(LDFLAGS) -o runtest
 
-dbgtest1:
-	$(CXXC) $(STD) $(DBG) $(INCL) $(SRC) ./test/test1.cpp $(LDFLAGS) -o dbgtest1
+dbgtest1: ./test/test.cpp
+	$(CXXC) $(STD) $(DBG) $(INCL) ./test/test.cpp $(LDFLAGS) -o dbgtest
 
+measure: ./test/measure.cpp
+	$(CXXC) $(STD) $(OPT) $(INCL) ./test/measure.cpp $(LDFLAGS) -o runmeasure
+
+dbgmeasure: ./test/measure.cpp
+	$(CXXC) $(STD) $(DBG) $(INCL) ./test/measure.cpp $(LDFLAGS) -o dbgmeasure
 
 
 clear:
-	rm -f run dbg runtest1 dbgtest1
+	rm -f run dbg runtest dbgtest runmeasure dbgmeasure

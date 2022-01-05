@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <limits>
 #include "debug.hh"
-
+#include "floydwarshall.hh"
 
 
 
@@ -13,29 +13,43 @@ int main( int argc , char *argv[] )
 
 	// Primjer s prezentacije
 	constexpr std::size_t Nvertices = 4;
-	
-	const double w[Nvertices][Nvertices] = { {   +0 , +inf ,   -2 , +inf } ,
-											 {   +4 ,   +0 ,   +3 , +inf } ,
-											 { +inf , +inf ,   +0 ,   +2 } ,
-											 { +inf ,   -1 , +inf ,   +0 }
-										   };
-	
-	
-	double d[Nvertices][Nvertices];
-	for(int i=0; i<Nvertices; ++i)
-		for(int j=0; j<Nvertices; ++j)
-			d[i][j] = ( (i==j) ? 0 : w[i][j] );
-	for(int k=0; k<Nvertices; ++k)
-	    for(int i=0; i<Nvertices; ++i)
-			for(int j=0; j<Nvertices; ++j)
-				d[i][j] = std::min( d[i][j] , d[i][k]+d[k][j] );
-	
-	
+
+    auto w = allocMat<double>(Nvertices,Nvertices);
+
+    w[0][0] = 0;
+    w[0][1] = +inf;
+    w[0][2] = -2;
+    w[0][3] = +inf;
+
+    w[1][0] = +4;
+    w[1][1] = +0;
+    w[1][2] = +3;
+    w[1][3] = +inf;
+
+    w[2][0] = +inf;
+    w[2][1] = +inf;
+    w[2][2] = +0;
+    w[2][3] = +2;
+
+    w[3][0] = +inf;
+    w[3][1] = -1;
+    w[3][2] = +inf;
+    w[3][3] = +0;
+
+
+    auto d = allocMat<double>(Nvertices,Nvertices);
+
+    findMinDistances(Nvertices, w, d);
+
 	for(int i=0; i<Nvertices; ++i)
 	{	for(int j=0; j<Nvertices; ++j)
 			printf("%6.2f" , d[i][j]);
 		printf("\n");
 	}
-			
+
+
+    deallocMat(w, Nvertices, Nvertices);
+	deallocMat(d, Nvertices, Nvertices);
+
     return 0;
 }
